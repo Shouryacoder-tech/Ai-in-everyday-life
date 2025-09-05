@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI in Everyday Life</title>
+  <style>
+    :root{
+      --neon: #00ffaa;
+      --neon-2:#58a6ff;
+      --bg-dark:#0b0f15;
+      --glass: rgba(255,255,255,.08);
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%;font-family:"Segoe UI",Arial,sans-serif;color:#fff;background:linear-gradient(135deg,#0b0f15,#151b26)}
+    a{color:inherit}
+
+    /* Background YouTube video */
+    .video-bg{
+      position:fixed; inset:0; z-index:-2; overflow:hidden;
+    }
+    .video-bg iframe{
+      position:absolute; inset:0; width:100vw; height:100vh; pointer-events:none;
+    }
+
+    /* Subtle overlay to enhance readability on top of video */
+    .overlay{
+      position:fixed; inset:0; z-index:-1;
+      background: radial-gradient(70% 60% at 50% 30%, rgba(0,0,0,.15), rgba(0,0,0,.65)),
+                  linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,0,0,.6));
+      backdrop-filter: blur(1px);
+    }
+
+    /* Hero / Banner */
+    .banner{
+      min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+      text-align:center; padding:3rem 1.25rem;
+    }
+    .banner h1{
+      font-size:clamp(2.2rem, 4vw + 1rem, 4.5rem);
+      margin:.25rem 0 .5rem;
+      text-shadow:0 0 20px var(--neon), 0 0 40px var(--neon-2);
+      letter-spacing:.5px;
+    }
+    .banner p{
+      max-width:900px; font-size:clamp(1.05rem, 1.2vw + .7rem, 1.5rem); line-height:1.7;
+      text-shadow:0 0 12px var(--neon-2);
+      margin:0 auto 1.5rem;
+    }
+    .chips{
+      display:flex; gap:.6rem; flex-wrap:wrap; justify-content:center; margin-top:.75rem;
+    }
+    .chip{
+      background: rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.15);
+      padding:.5rem .8rem; border-radius:999px; font-weight:600; font-size:.95rem;
+      box-shadow:0 0 10px rgba(0,255,170,.25);
+    }
+    .cta{
+      margin-top:1.4rem; display:inline-block; padding:.9rem 1.2rem; border-radius:14px;
+      background:linear-gradient(90deg, var(--neon), var(--neon-2));
+      color:#001018; font-weight:800; text-decoration:none; box-shadow:0 8px 28px rgba(0, 255, 170, .35);
+    }
+    .ai-figure{
+      margin-top:1.8rem; width:min(420px, 65vw);
+      filter: drop-shadow(0 0 24px var(--neon));
+      animation:float 5s ease-in-out infinite;
+    }
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-16px)}}
+
+    /* Nav */
+    nav{
+      position:sticky; top:0; z-index:10; backdrop-filter: blur(8px);
+      background: rgba(0,0,0,.55); border-bottom:1px solid rgba(255,255,255,.1);
+    }
+    .nav-inner{max-width:1200px; margin:0 auto; display:flex; gap:1rem; justify-content:center; padding:1rem}
+    nav a{
+      text-decoration:none; color:var(--neon-2); font-weight:700;
+      padding:.4rem .7rem; border-radius:10px; transition:.2s;
+    }
+    nav a:hover{color:var(--neon); text-shadow:0 0 8px var(--neon)}
+
+    /* Sections */
+    section{max-width:1200px; margin:2.2rem auto; padding:2rem 1.25rem}
+    h2{
+      text-align:center; margin:0 0 1.2rem; color:var(--neon);
+      text-shadow:0 0 12px var(--neon);
+      font-size:clamp(1.6rem, 1.4vw + 1rem, 2.2rem);
+    }
+    .cards{
+      display:grid; grid-template-columns:repeat(auto-fit, minmax(290px, 1fr)); gap:1.2rem;
+    }
+    .card{
+      background:var(--glass); border:1px solid rgba(255,255,255,.12); border-radius:18px;
+      overflow:hidden; box-shadow:0 0 18px rgba(0,255,170,.15);
+      transition:transform .25s ease, box-shadow .25s ease;
+    }
+    .card:hover{transform:translateY(-6px); box-shadow:0 0 28px rgba(0,255,170,.35)}
+    .card img{width:100%; height:220px; object-fit:cover}
+    .card .content{padding:1rem 1.1rem 1.3rem}
+    .card .content p{margin:.35rem 0 .35rem; color:#dce7ff}
+
+    /* Simple diagram */
+    .diagram{
+      margin-top:1rem; padding:1.5rem; border-radius:18px;
+      background:linear-gradient(135deg, rgba(0,255,170,.08), rgba(88,166,255,.08));
+      border:1px dashed rgba(255,255,255,.25);
+    }
+    .diagram-wrap{
+      display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:.75rem; align-items:center;
+    }
+    .node{
+      background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.18);
+      border-radius:14px; padding:.8rem; text-align:center; font-weight:700;
+      box-shadow:0 0 14px rgba(88,166,255,.3);
+    }
+    .caption{margin-top:.8rem; text-align:center; color:#cfe8ff}
+
+    footer{
+      text-align:center; padding:1.4rem; color:#cfd8e3;
+      background:rgba(0,0,0,.7); border-top:1px solid rgba(255,255,255,.1);
+    }
+
+    /* Mobile tweak for readability over video */
+    @media (max-width: 640px){
+      .banner{padding-top:5rem; padding-bottom:4rem}
+      section{padding:1.5rem 1rem}
+      .card img{height:190px}
+    }
+  </style>
+</head>
+<body>
+  <!-- YouTube background -->
+  <div class="video-bg">
+    <iframe
+      src="https://www.youtube.com/embed/0EtN7f2BXkk?autoplay=1&mute=1&controls=0&loop=1&playlist=0EtN7f2BXkk&modestbranding=1&playsinline=1"
+      title="Futuristic Background"
+      frameborder="0"
+      allow="autoplay; fullscreen"
+      allowfullscreen>
+    </iframe>
+  </div>
+  <div class="overlay"></div>
+
+  <!-- Futuristic Banner -->
+  <header class="banner" id="top">
+    <h1>🌐 AI in Everyday Life</h1>
+    <p>From smart homes to autonomous travel, personalized learning to next-gen healthcare—this site explores how Artificial Intelligence quietly weaves into every part of daily life.</p>
+    <div class="chips" aria-label="AI touchpoints">
+      <span class="chip">🏠 Home</span>
+      <span class="chip">💼 Work</span>
+      <span class="chip">🚗 On the Move</span>
+      <span class="chip">🧘 Personal</span>
+      <span class="chip">⚖ Concerns</span>
+      <span class="chip">🚀 Future</span>
+    </div>
+    <a class="cta" href="#home">Explore the journey →</a>
+    <!-- replace with your own futuristic diagram if you like -->
+    <img class="ai-figure" src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png" alt="Futuristic AI brain illustration"/>
+  </header>
+
+  <!-- Sticky Navigation -->
+  <nav>
+    <div class="nav-inner">
+      <a href="#home">Home</a>
+      <a href="#work">Work</a>
+      <a href="#move">On the Move</a>
+      <a href="#personal">Personal</a>
+      <a href="#concerns">Concerns</a>
+      <a href="#future">Future</a>
+    </div>
+  </nav>
+
+  <!-- HOME -->
+  <section id="home">
+    <h2>🏠 AI at Home</h2>
+    <div class="cards">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1581091870627-3be88fb1f3d2?auto=format&fit=crop&w=1200&q=80" alt="Smart home hub"/>
+        <div class="content">
+          <p>Smart assistants control lights, climate, and appliances with voice or routines—saving time and energy.</p>
+          <p>Streaming platforms personalize shows and music to your tastes using recommendation algorithms.</p>
+          <p>Security cams detect unusual activity, sending real-time alerts to keep families safe.</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80" alt="Smart kitchen"/>
+        <div class="content">
+          <p>Meal planners and connected kitchens suggest recipes, track inventory, and reduce food waste.</p>
+          <p>Energy management learns your habits to cut electricity usage without sacrificing comfort.</p>
+        </div>
+      </article>
+    </div>
+
+    <div class="diagram">
+      <h3 style="text-align:center;margin-top:0">How Home AI Connects</h3>
+      <div class="diagram-wrap">
+        <div class="node">🎙 Voice</div>
+        <div class="node">💡 Lights</div>
+        <div class="node">🌡 Climate</div>
+        <div class="node">🔒 Security</div>
+        <div class="node">🍳 Kitchen</div>
+        <div class="node">🎬 Media</div>
+      </div>
+      <p class="caption">A home “mesh” learns routines and coordinates scenes (e.g., movie night: dim lights, set temp, start playlist).</p>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section id="work">
+    <h2>💼 AI at Work</h2>
+    <div class="cards">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80" alt="AI and data visualization"/>
+        <div class="content">
+          <p>Automation handles repetitive tasks so teams focus on creativity and strategy.</p>
+          <p>Decision systems spot patterns in huge datasets—accelerating research and business insights.</p>
+          <p>Copilot tools draft emails, summarize docs, and generate code to boost productivity.</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1581093588401-22d40d2a5d8b?auto=format&fit=crop&w=1200&q=80" alt="Healthcare AI"/>
+        <div class="content">
+          <p>In healthcare, AI supports diagnostics from imaging to triage, improving speed and accuracy.</p>
+          <p>In education, adaptive platforms personalize lessons and provide instant feedback.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- ON THE MOVE -->
+  <section id="move">
+    <h2>🚗 AI on the Move</h2>
+    <div class="cards">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1502877338535-766e1452684a?auto=format&fit=crop&w=1200&q=80" alt="Autonomous vehicle at night"/>
+        <div class="content">
+          <p>Navigation predicts traffic and suggests faster routes—saving hours each week.</p>
+          <p>Driver-assist features enhance safety with lane-keeping, adaptive cruise, and collision alerts.</p>
+          <p>Ride-hailing uses matching algorithms to reduce wait times and optimize fleet coverage.</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1200&q=80" alt="Smart retail"/>
+        <div class="content">
+          <p>Smart retail blends vision and sensors for seamless checkout and tailored in-store offers.</p>
+          <p>Logistics predicts demand and routes deliveries efficiently to cut costs and emissions.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- PERSONAL -->
+  <section id="personal">
+    <h2>🧘 Personal Life with AI</h2>
+    <div class="cards">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1598257006421-d1cfebd9f8d4?auto=format&fit=crop&w=1200&q=80" alt="Wearables and health"/>
+        <div class="content">
+          <p>Wearables analyze sleep, stress, and workouts—recommending habits that fit your goals.</p>
+          <p>Mental wellness apps adapt exercises to your mood and track progress over time.</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1523580846011-d3a5bc25702b?auto=format&fit=crop&w=1200&q=80" alt="Personalized learning"/>
+        <div class="content">
+          <p>Language and learning apps personalize lessons to your pace, weaknesses, and interests.</p>
+          <p>Personal finance assistants categorize spending and coach better saving habits.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- CONCERNS -->
+  <section id="concerns">
+    <h2>⚖ Ethics & Concerns</h2>
+    <div class="cards">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1526378722484-cc5c7100f1f3?auto=format&fit=crop&w=1200&q=80" alt="Data and privacy"/>
+        <div class="content">
+          <p>Privacy & surveillance: who collects data, how it’s used, and how it’s secured.</p>
+          <p>Bias & fairness: models can reflect biased data—audits and governance are crucial.</p>
+          <p>Jobs & reskilling: automation shifts roles; lifelong learning keeps people future-ready.</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1557800636-894a64c1696f?auto=format&fit=crop&w=1200&q=80" alt="AI governance"/>
+        <div class="content">
+          <p>Responsible AI frameworks set standards for transparency, safety, and accountability.</p>
+          <p>Human-in-the-loop approaches balance automation with oversight and ethics.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- FUTURE -->
+  <section id="future">
+    <h2>🚀 The Future of AI</h2>
+    <div class="cards">
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1504384308090-c894fdcc538d?auto=format&fit=crop&w=1200&q=80" alt="Futuristic city"/>
+        <div class="content">
+          <p>Smarter cities optimize energy, transit, and safety for sustainable growth.</p>
+          <p>AI + robotics expands capability in healthcare, manufacturing, and disaster response.</p>
+          <p>Breakthroughs in science accelerate with AI-assisted discovery and simulation.</p>
+        </div>
+      </article>
+      <article class="card">
+        <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80" alt="Research and innovation"/>
+        <div class="content">
+          <p>With ethical guardrails and inclusive design, AI can unlock opportunity at global scale.</p>
+          <p>The future is a partnership: human creativity + machine intelligence.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <footer>
+    © 2025 AI in Everyday Life • Designed with ❤ • Neon UI
+  </footer>
+</body>
+</html>
